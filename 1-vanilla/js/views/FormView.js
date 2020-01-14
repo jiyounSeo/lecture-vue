@@ -15,6 +15,7 @@ FormView.setup = function(el) {
 
 FormView.showResetBtn = function(show = true) {
     this.resetEl.style.display = show ? 'block' : 'none'
+    
 }
 
 FormView.bindEvents = function() {
@@ -33,6 +34,11 @@ FormView.onKeyup = function(e) {
 FormView.onClickReset = function(e) {
     this.emit('@reset')
     this.showResetBtn(false)
+}
+
+FormView.setValue = function (value = '') {
+    this.inputEl.value = value
+    this.showResetBtn(this.inputEl.value.length)
 }
 
 
