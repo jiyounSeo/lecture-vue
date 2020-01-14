@@ -22,7 +22,8 @@ export default {
             .on('@click', e => this.onClickKeyword(e.detail.keyword))
         
         HistoryView.setup(document.querySelector('#search-history'))
-            .on('@click', e => this.onClickHistory(e.detail.keyword))
+            .on('@click', e => this.onClickKeyword(e.detail.keyword))
+            .on('@remove', e => this.onClickRemoveHistory(e.detail.keyword))
 
         TabView.setup(document.querySelector('#tabs'))
         .on('@change', e => this.onChangeTab(e.detail.tabName))
@@ -38,8 +39,10 @@ export default {
 
         if (this.selectedTab === '추천 검색어') {
             this.fetchSearchKeyword()
+            HistoryView.hide()
         } else {
             this.fetchSearchHistory()
+            KeywordView.hide()
         }
 
         ResultView.hide()
@@ -49,12 +52,13 @@ export default {
         KeywordModel.list().then(data => {
             KeywordView.render(data)
         })
+        
     },
 
     fetchSearchHistory() {
         console.log (tag, 'fetchSearchHistory()')
         HistoryModel.list().then(data => {
-            HistoryView.render(data)
+            HistoryView.render(data).bindRemoveBtn()
         })
     },
 
@@ -62,6 +66,7 @@ export default {
         console.log(tag, 'search()')
         // search api
         FormView.setValue(query)
+        HistoryModel.add(query)
         SearchModel.list(query).then(data => {
             this.onSearchResult(data)
         })
@@ -84,6 +89,8 @@ export default {
     },
 
     onChangeTab(tabName) {
+        this.selectedTab = tabName
+        this.renderView()
     },
 
     onClickKeyword(keyword) {
@@ -92,6 +99,11 @@ export default {
 
     onClickHistory(keyword) {
         this.search(keyword)
+    },
+
+    onClickRemoveHistory(keyword) {
+        HistoryModel.remove(keyword)
+        this.renderView()
     }
     
 }  
